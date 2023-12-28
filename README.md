@@ -1,2 +1,2 @@
-# abootloop
-Protection from bootloop. Press power key on boot to disable modules
+# Anti bootloop
+Protection from bootloop. Press power key on boot to disable magisk modules
