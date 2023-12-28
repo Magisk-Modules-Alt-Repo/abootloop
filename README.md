@@ -1,0 +1,2 @@
+# abootloop
+Protection from bootloop
