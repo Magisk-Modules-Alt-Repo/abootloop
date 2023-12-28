@@ -3,5 +3,5 @@ name=Anti bootloop
 version=v1.2
 versionCode=3
 author=nedorazrab0
-description=Protection from bootloop. Press power key on boot to disable modules
+description=Protection from bootloop. Press power key on boot to disable magisk modules
 updateJson=https://raw.githubusercontent.com/nedorazrab0/abootloop/main/update.json
