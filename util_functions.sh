@@ -1,5 +1,3 @@
-#!/system/bin/sh
-
 press_check(){
     timeout 1 getevent -l | grep 'KEY_POWER'
 }
