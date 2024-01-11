@@ -1,5 +1,5 @@
 press_check(){
-    timeout 1 getevent -l | grep 'KEY_POWER'
+    timeout 1 getevent -lq | grep -q 'KEY_POWER'
 }
 
 disable_modules(){
