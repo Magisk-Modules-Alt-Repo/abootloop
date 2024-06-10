@@ -1,7 +1,7 @@
 id=abootloop
 name=Anti bootloop
-version=v1.2
-versionCode=3
+version=v1.3
+versionCode=4
 author=nedorazrab0
-description=Protection from bootloop. Press power key at boot to disable magisk modules
+description=Protection from bootloop
 updateJson=https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/abootloop/main/update.json
