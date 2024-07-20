@@ -40,9 +40,9 @@ selector() {
         3) fucking_array '[Abort installation]' '[Power key]' '[Vol+]' '[Vol-]';;
     esac
     list="$(for eraz in $(seq $raz); do
-                echo -n ' '; eval echo -n "$(echo \$arr$eraz)"
+                echo -n ', '; eval echo -n "$(echo \$arr$eraz)"
             done)"
-    ui_print ">> Avaliable options: ${list}."
+    ui_print ">> Avaliable options: ${list:2}."
     ui_print
     sleep 0.5
     unset i
@@ -59,28 +59,40 @@ selector() {
     [[ "$i" == '1' ]] && abort '! Installation has been aborted'
 }
 
-ui_print '- Configurating...'
-ui_print
-ui_print 'Use [Vol+] to confirm, and [Vol-] to select next option!'
-ui_print
-sleep 1
-ui_print '> Should the module use one button or a combination of buttons?'
-selector 1
+# main
+if command -v getevent > /dev/null; then
+    ui_print '- `getevent` command found'
+else
+    abort '! `getevent` command missing'
+fi
+getevent -il | grep -q 'ABS_MT_POSITION_.' || ui_print '! [Touch screen] option is not working on your device!'
 
-case "$i" in
-    2)
-        ui_print '> Select a button'
-        selector 3
-        mkconfig "$i"
-        ;;
-    3)
-        a='1'
-        for num in first second; do
-            ui_print "> Select the ${num} combination button"
-            let a++
-            selector "$a"
+if getevent -il | grep -q 'KEY_VOLUME.'; then
+    ui_print '**** Configurating ****'
+    ui_print 'Use [Vol+] to confirm your choice, and [Vol-] to select next option!'
+    ui_print
+    sleep 1
+    ui_print '> Should the module use one button or a combination of buttons?'
+    selector 1
+
+    case "$i" in
+        2)
+            ui_print '> Select a button'
+            selector 3
             mkconfig "$i"
-        done
-        ;;
-esac
-rm -f $MODPATH/LICENSE
+            ;;
+        3)
+            a='1'
+            for num in first second; do
+                ui_print "> Select the ${num} combination button"
+                let a++
+                selector "$a"
+                mkconfig "$i"
+            done
+            ;;
+    esac
+else
+    ui_print '- It looks like your device does not have volume buttons'
+    ui_print '- Use [Power key] to trigger the module!'
+    mkconfig '2'
+fi
