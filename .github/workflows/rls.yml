@@ -10,27 +10,19 @@ jobs:
       - uses: actions/checkout@v4
       - name: Updating service files
         run: |
-          cat ./module.prop | tr -d ' ' > ./nr-module.prop
-          source ./nr-module.prop
+          eval "$(cat ./module.prop | tr -d ' ')"
+          python3 ./.github/mkjson "$version" "$versionCode" "$zipUrl" "$changelog"
           
-          # Making a json
-          echo '{' > ./update.json
-          echo "    \"version\": \"$version\"," >> ./update.json
-          echo "    \"versionCode\": $versionCode," >> ./update.json
-          echo "    \"zipUrl\": \"https://github.com/Magisk-Modules-Alt-Repo/abootloop/releases/download/$version/abootloop.zip\"," >> ./update.json
-          echo '    "changelog": "https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/abootloop/main/changelog.md"' >> ./update.json
-          echo '}' >> ./update.json
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add ./update.json
-          git commit -m 'Json update'
+          git commit -m 'JSON update'
           git push
       - name: Compressing
-        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json ./nr-module.prop
+        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json
       - name: Releasing
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          source ./nr-module.prop
-          gh release create "$version" ./abootloop.zip --notes="$(cat ./changelog.md)"
+          eval "$(cat ./module.prop | tr -d ' ')"
+          gh release create "$version" ./abootloop.zip -F ./changelog.md
