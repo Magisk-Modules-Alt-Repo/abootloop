@@ -9,7 +9,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Compressing
-        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json ./changelog
+        run: |
+          zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md \ 
+                                          ./update.json ./changelog
       - name: Releasing
         env:
           GH_TOKEN: ${{ github.token }}
@@ -18,7 +20,7 @@ jobs:
           gh release create "$version" ./abootloop.zip -F ./changelog
       - name: Updating service files
         run: |
-          source /dev/shn/modprop
+          source /dev/shm/modprop
           python3 ./.github/mkjson "$version" "$versionCode" "$zipUrl" "$changelog"
           
           git config user.name 'github-actions[bot]'
