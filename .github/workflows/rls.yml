@@ -8,9 +8,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Compressing
+        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json ./changelog
+      - name: Releasing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat ./module.prop | tr -d ' ' | sudo tee /dev/shm/modprop > /dev/null
+          gh release create "$version" ./abootloop.zip -F ./changelog
       - name: Updating service files
         run: |
-          eval "$(cat ./module.prop | tr -d ' ')"
+          source /dev/shn/modprop
           python3 ./.github/mkjson "$version" "$versionCode" "$zipUrl" "$changelog"
           
           git config user.name 'github-actions[bot]'
@@ -18,11 +26,3 @@ jobs:
           git add ./update.json
           git commit -m 'JSON update'
           git push
-      - name: Compressing
-        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json
-      - name: Releasing
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          eval "$(cat ./module.prop | tr -d ' ')"
-          gh release create "$version" ./abootloop.zip -F ./changelog.md
