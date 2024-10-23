@@ -6,7 +6,7 @@ find_mod() {
         path="$path/.."
     else
         return 1
-   fi
+    fi
 }
 
 try_mount() {
@@ -27,7 +27,7 @@ disable_modules() {
         && list="$mod/disable $list"
     done
 
-    touch $list
+    [ -n "$list" ] touch $list
     [ -n "$umount" ] && umount "$TMPDIR"
     exit 0
 }
@@ -36,7 +36,7 @@ disable_modules() {
 # if zip name includes "disableall" (recovery)
 umask 022
 mount /data 2> /dev/null
-TMPDIR='/dev/tmp'
+TMPDIR='/dev/tmp/abootloop'
 echo "$3" | grep -q 'disableall' && disable_modules
 
 # Magisk script
