@@ -27,7 +27,7 @@ disable_modules() {
         && list="$mod/disable $list"
     done
 
-    [ -n "$list" ] touch $list
+    [ -n "$list" ] && touch $list
     [ -n "$umount" ] && umount "$TMPDIR"
     exit 0
 }
