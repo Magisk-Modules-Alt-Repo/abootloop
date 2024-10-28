@@ -17,10 +17,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat ./module.prop | tr -d ' ' | sudo tee /dev/shm/modprop > /dev/null
+          . /dev/shm/modprop
           gh release create "$version" ./abootloop.zip -F ./changelog
       - name: Updating service files
         run: |
-          source /dev/shm/modprop
+          . /dev/shm/modprop
           python3 ./.github/mkjson "$version" "$versionCode" "$zipUrl" "$changelog"
           
           git config user.name 'github-actions[bot]'
