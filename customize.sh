@@ -60,10 +60,7 @@ selector() {
 }
 
 # main
-if ! command -v getevent > /dev/null; then
-    abort '! `getevent` command missing'
-fi
-
+command -v getevent > /dev/null || abort '! `getevent` command missing'
 if ! getevent -il | grep -q 'ABS_MT_POSITION_.'; then
     ui_print '! [Touch screen] option is'
     ui_print '  not working on your device!'
