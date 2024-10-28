@@ -4,17 +4,23 @@
 from sys import argv
 from json import dumps
 
-def main(file="update.json", items=["version", "versionCode",
-                                    "zipUrl", "changelog"]):
+def main(items=["version", "versionCode",
+                "zipUrl", "changelog"]):
     info = {}
     i = 0
     for item in items:
         i = i + 1
-        info[item] = argv[i]
+        arg = argv[i]
+        try:
+            info[item] = int(arg)
+        except ValueError:
+            info[item] = arg
 
+    return info
+
+def write(info, file="update.json"):
     with open(file, "w") as json:
         json.write(dumps(info, indent=4))
 
 if __name__ == "__main__":
-    main()
-  
+    write(main())
