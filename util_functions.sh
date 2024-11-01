@@ -11,7 +11,7 @@ press_check() {
 disable_modules() {
     for mod in $MODDIR/../*; do
         [[ -d "$mod" && ! -f "$mod/disable" ]] \
-        && list="$mod $list"
+        && list="$mod/disable $list"
     done
     [[ -n "$list" ]] && touch $list
     reboot
