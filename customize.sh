@@ -56,7 +56,7 @@ selector() {
     done
     ui_print
     [[ "$i" == '1' ]] && abort '! Installation has been aborted'
-    mkconfig "$i"
+    [[ "$1" != '1' ]] && mkconfig "$i"
 }
 
 # main
