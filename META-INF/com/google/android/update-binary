@@ -12,28 +12,35 @@ find_mod() {
 try_mount() {
     rm -rf "$TMPDIR"
     mkdir -p "$TMPDIR"
-    find /data/adb/* -name 'modules.img' -type f -exec mount -o loop {} "$TMPDIR" \;
-    umount='true'
+    find /data/adb -name 'modules.img' -type f -exec mount -o loop {} "$TMPDIR" \;
+}
+
+umnt_if_mnt() {
+    mountpoint -q "$1" && umount "$1"
 }
 
 disable_modules() {
-    if ! find_mod '/data/adb/* -mindepth 2'; then 
+    if ! find_mod '/data/adb/*/*'; then 
         try_mount && find_mod "$TMPDIR"
     fi
 
-    [ -z "$path" ] && exit 1
+    if [ -z "$path" ]; then
+        umnt_if_mnt "$TMPDIR"
+        exit 1
+    fi
+
     for mod in $path/*; do
         [ -d "$mod" ] && [ ! -f "$mod/disable" ] \
         && list="$mod/disable $list"
     done
 
     [ -n "$list" ] && touch $list
-    [ -n "$umount" ] && umount "$TMPDIR"
+    umnt_if_mnt "$TMPDIR"
     exit 0
 }
 
 # Find and disable all Magisk modules
-# if zip name includes "disableall" (recovery)
+# if zip name contains "disableall" (recovery)
 umask 022
 mount /data 2> /dev/null
 TMPDIR='/dev/tmp/abootloop'
