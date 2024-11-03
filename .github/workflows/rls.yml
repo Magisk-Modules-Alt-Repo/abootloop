@@ -11,9 +11,7 @@ jobs:
       - name: Writing the variables
         run: cat ./module.prop | tee -a "$GITHUB_ENV"
       - name: Compressing
-        run: |
-          zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md \ 
-                                          ./update.json ./changelog.md
+        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json ./changelog.md
       - name: Releasing
         env:
           GH_TOKEN: ${{ github.token }}
