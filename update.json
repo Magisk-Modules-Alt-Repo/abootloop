@@ -1,6 +1,6 @@
 {
-    "version": "v1.3.1",
-    "versionCode": 5,
-    "zipUrl": "https://github.com/Magisk-Modules-Alt-Repo/abootloop/releases/download/v1.3.1/abootloop_v1.3.1.zip",
+    "version": "v1.3.2",
+    "versionCode": 6,
+    "zipUrl": "https://github.com/Magisk-Modules-Alt-Repo/abootloop/releases/download/v1.3.2/abootloop.zip",
     "changelog": "https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/abootloop/main/changelog.md"
 }
