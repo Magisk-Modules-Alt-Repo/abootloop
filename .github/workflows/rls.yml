@@ -7,21 +7,31 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Writing the variables
-        run: cat ./module.prop | tee -a "$GITHUB_ENV"
+        run: cat ./module.prop | tee -a "${GITHUB_ENV}"
+
       - name: Compressing
-        run: zip -rv9 ./abootloop.zip ./* -x ./.git ./.github ./README.md ./update.json ./changelog.md
+        run: |
+          zip -9rv ./abootloop.zip ./* -x ./.git ./.github ./README.md \
+            ./update.json ./changelog.md ./common/repo.json
+
       - name: Releasing
+        run: |
+          gh release create "${version}" \
+            ./abootloop.zip -F ./changelog.md
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$version" ./abootloop.zip -F ./changelog.md
+
       - name: Updating service files
         run: |
-          python3 ./.github/mkjson "$version" "$versionCode" "$zipUrl" "$changelog"
-          
+          python3 ./.github/mkjson "${version}" "${versionCode}" \
+            "${zipUrl}" "${changelog}"
           git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git config user.email \
+            '41898282+github-actions[bot]@users.noreply.github.com'
           git add ./update.json
           git commit -m 'JSON update'
           git push
