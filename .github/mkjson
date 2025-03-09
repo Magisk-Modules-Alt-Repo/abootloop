@@ -24,7 +24,7 @@ def write(info, file="update.json"):
         json.write(dumps(info, indent=2))
 
 def main():
-    write(mkjson)
+    write(mkjson())
 
 if __name__ == "__main__":
     main()
