@@ -1,8 +1,11 @@
 #!/system/bin/env sh
-MODDIR="$(dirname "$0")"
+#
+# Enable all Magisk modules
+MODDIR="$(dirname "${0}")"
 
-for mod in $MODDIR/../*; do
-    [ -d "$mod" ] && [ -f "$mod/disable" ] \
-    && list="$mod/disable $list"
+for mod in ${MODDIR}/../*; do
+  if [ -d "${mod}" ] && [ -f "${mod}/disable" ]; then
+    list="${list} ${mod}/disable"
+  fi
 done
-[ -n "$list" ] && rm -f $list
+[ -n "${list}" ] && rm -f -- ${list}

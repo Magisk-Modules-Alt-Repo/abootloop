@@ -1,8 +1,5 @@
-### v1.3.2
-- Install process improvements
-- Disabling mechanism improvements
-- Action button (enabling all modules)
-- Modules disabling via custom recovery\
-  (flash this module as `disableall.zip`)
+### v1.3.3
 
-[README.md](https://github.com/Magisk-Modules-Alt-Repo/abootloop/blob/main/README.md)
+- Code simplification
+- The feature of disabling modules using custom recovery has also been removed!
+- Install process simplification

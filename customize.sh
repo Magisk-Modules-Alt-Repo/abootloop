@@ -1,97 +1,91 @@
-fucking_array() {
-    unset raz
-    for var in "$@"; do
-        let raz++
-        eval arr${raz}=\"$var\"
-    done
-    limit=$((raz + 1))
+cfgpath="${MODPATH}/common/cfg.sh"
+powkey='KEY_POWER'
+volupkey='KEY_VOLUMEUP'
+voldownkey='KEY_VOLUMEDOWN'
+keylist="${powkey} ${volupkey} ${voldownkey}"
+
+detect_keys() {
+  local event
+  while true; do
+    event="$(getevent -lqn -c1)"
+    # `KEY.*DOWN` means that the key was pressed, not released
+    if echo "${event}" | grep -q "${volupkey}.*DOWN"; then
+      echo 'volup' && break
+    elif echo "${event}" | grep -q "${voldownkey}.*DOWN"; then
+      echo 'voldown' && break
+    fi
+  done
 }
 
-mkconfig() {
-    case "$1" in
-        2) config='KEY_POWER';;
-        3) config='KEY_VOLUMEUP';;
-        4) config='KEY_VOLUMEDOWN';;
-        5) config="'(ABS_MT_POSITION_Y|ABS_MT_POSITION_X)'";;
-    esac
-    let configs++
-    echo "action${configs}=${config}" >> "$MODPATH/config.sh"
+mkcfg() {
+  local count
+  local key
+  count="${1}"
+  key="${2}"
+
+  echo "key${count}=${key}" >> "${cfgpath}"
+  ui_print ">> ${key} is selected!"
+  ui_print
 }
 
-keys() {
-    timelimit="$(( $(date +%s) + 60 ))"
-    while true; do
-        keys="$(timeout 0.01 getevent -lqc1 &)"
-        time="$(date +%s)"
-        [[ "$time" -gt "$timelimit" ]] && abort '! Timeout'
-        if echo "$keys" | grep -q 'KEY_VOLUMEUP.*DOWN'; then
-            key='up'; break
-        elif echo "$keys" | grep -q 'KEY_VOLUMEDOWN.*DOWN'; then
-            key='down'; break
-        fi
-    done
+upd_complete_var() {
+  echo "Complete the installation with ${1} keys selected"
 }
 
-selector() {
-    case "$1" in
-        1) fucking_array '[Abort installation]' '[One button]' '[Button combination]';;
-        2) fucking_array '[Abort installation]' '[Power key]' '[Vol+]' '[Vol-]' '[Touch screen]';;
-        3) fucking_array '[Abort installation]' '[Power key]' '[Vol+]' '[Vol-]';;
-    esac
-    ui_print ">> Avaliable options:"
-    for eraz in $(seq "$raz"); do
-        eval ui_print \" ' ' $(echo \$arr$eraz)\"
+interactive() {
+  local pressed_key
+  local complete
+  local choice
+  local count
+
+  ui_print '**** Customizing ****'
+  ui_print
+  ui_print '- Use VOL+ to confirm your choice'
+  ui_print '  and VOL- to select next option!'
+  ui_print
+  sleep 1
+
+  count=0
+  complete="$(upd_complete_var ${count})"
+  
+  while true; do
+    for choice in ${keylist} "${complete}"; do
+      ui_print "> ${choice}"
+      pressed_key="$(detect_keys)"
+      case "${pressed_key}" in
+        volup) break;;
+        voldown) continue;;  # Continue the loop if VOL- has been pressed
+      esac
     done
-    ui_print
-    sleep 0.5
-    i='1'
-    while true; do
-        let i++
-        [[ "$i" == "$limit" ]] && i='1'
-        one="$(eval echo -n "$(echo "\$arr$i")")"
-        ui_print ">>> Your choice: $one"
-        keys
-        [[ "$key" == 'up' ]] && break
-        [[ "$key" == 'down' ]] && continue
-    done
-    ui_print
-    [[ "$i" == '1' ]] && abort '! Installation has been aborted'
-    [[ "$1" != '1' ]] && mkconfig "$i"
+
+    if [[ "${pressed_key}" == 'volup' ]]; then
+      if [[ "${choice%_*}" == 'KEY' ]]; then
+        # Add a new key to the conf
+        count="$((count + 1))" 
+        mkcfg "${count}" "${choice}"
+        [[ "${count}" == 2 ]] && break  # Do not add more than 2 keys
+        complete="$(upd_complete_var ${count})"
+      else
+        break  # Complete the installation manually
+      fi
+    fi
+  done
 }
 
-# main
-command -v getevent > /dev/null || abort '! `getevent` command missing'
-if ! getevent -il | grep -q 'ABS_MT_POSITION_.'; then
-    ui_print '! [Touch screen] option is'
-    ui_print '  not working on your device!'
-    sleep 1
-fi
+fallback() {
+  ui_print '- It looks like your device does'
+  ui_print '  not have volume buttons'
+  ui_print '- Use the power key to trigger the module!'
+  mkcfg 1 "${powkey}"
+}
 
-if getevent -il | grep -q 'KEY_VOLUME.'; then
-    ui_print '**** Customizing ****'
-    ui_print '- Use [Vol+] to confirm your choice,'
-    ui_print '  and [Vol-] to select next option!'
-    ui_print
-    sleep 1
-    ui_print '> Should the module use one button'
-    ui_print '  or a combination of buttons?'
-    selector 1
+main() {
+  command -v getevent > /dev/null || abort '! `getevent` command missing'
+  if getevent -il | grep -q 'KEY_VOLUME.'; then
+    interactive
+  else
+    fallback
+  fi
+}
 
-    case "$i" in
-        2)
-            ui_print '> Select a button'
-            selector 3
-            ;;
-        3)
-            ui_print '> Select the first combination button'
-            selector 2
-            ui_print '> Select the second combination button'
-            selector 3
-            ;;
-    esac
-else
-    ui_print '- It looks like your device does'
-    ui_print '  not have volume buttons'
-    ui_print '- Use [Power key] to trigger the module!'
-    mkconfig 2
-fi
+main

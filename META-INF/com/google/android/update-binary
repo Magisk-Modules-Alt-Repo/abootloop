@@ -1,57 +1,10 @@
 #!/sbin/sh
 
-find_mod() {
-    path="$(find $1 -name 'module.prop' -type f -exec dirname {} \; | head -n1)"
-    if [ -n "$path" ]; then
-        path="$path/.."
-    else
-        return 1
-    fi
-}
-
-try_mount() {
-    rm -rf "$TMPDIR"
-    mkdir -p "$TMPDIR"
-    find /data/adb -name 'modules.img' -type f -exec mount -o loop {} "$TMPDIR" \;
-}
-
-umnt_if_mnt() {
-    mountpoint -q "$1" && umount "$1"
-}
-
-disable_modules() {
-    if ! find_mod '/data/adb/*/*'; then 
-        try_mount && find_mod "$TMPDIR"
-    fi
-
-    if [ -z "$path" ]; then
-        umnt_if_mnt "$TMPDIR"
-        exit 1
-    fi
-
-    for mod in $path/*; do
-        [ -d "$mod" ] && [ ! -f "$mod/disable" ] \
-        && list="$mod/disable $list"
-    done
-
-    [ -n "$list" ] && touch $list
-    umnt_if_mnt "$TMPDIR"
-    exit 0
-}
-
-# Find and disable all Magisk modules
-# if zip name contains "disableall" (recovery)
-umask 022
-mount /data 2> /dev/null
-TMPDIR='/dev/tmp/abootloop'
-echo "$3" | grep -q 'disableall' && disable_modules
-
-# Magisk script
 #################
 # Initialization
 #################
 
-# umask 022
+umask 022
 
 # echo before loading util_functions
 ui_print() { echo "$1"; }
@@ -70,7 +23,7 @@ require_new_magisk() {
 OUTFD=$2
 ZIPFILE=$3
 
-# mount /data 2>/dev/null
+mount /data 2>/dev/null
 
 [ -f /data/adb/magisk/util_functions.sh ] || require_new_magisk
 . /data/adb/magisk/util_functions.sh

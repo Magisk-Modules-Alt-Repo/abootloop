@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+#
 # Generate a JSON file
 
 from sys import argv
 from json import dumps
 
-def main(items=["version", "versionCode",
+def mkjson(items=["version", "versionCode",
                 "zipUrl", "changelog"]):
     info = {}
     i = 0
@@ -20,7 +21,10 @@ def main(items=["version", "versionCode",
 
 def write(info, file="update.json"):
     with open(file, "w") as json:
-        json.write(dumps(info, indent=4))
+        json.write(dumps(info, indent=2))
+
+def main():
+    write(mkjson)
 
 if __name__ == "__main__":
-    write(main())
+    main()
