@@ -1,7 +1,7 @@
 # Anti bootloop
 
 [![Github releases](https://img.shields.io/github/downloads/Magisk-Modules-Alt-Repo/abootloop/total?logo=GitHub)](https://github.com/Magisk-Modules-Alt-Repo/abootloop/releases)
-[![GitHub stargazers](https://img.shields.io/github/stars/Magisk-Modules-Alt-Repo/abootloop?style=flat&logo=Github&color=yellow)](https://github.com/Magisk-Modules-Alt-Repo/abootloop/stargazers)
+[![GitHub stargazers](https://img.shields.io/github/stars/Magisk-Modules-Alt-Repo/abootloop?style=flat&logo=Github&&color=e3b341)](https://github.com/Magisk-Modules-Alt-Repo/abootloop/stargazers)
 [![License](https://img.shields.io/github/license/Magisk-Modules-Alt-Repo/abootloop)](https://github.com/Magisk-Modules-Alt-Repo/abootloop/blob/main/LICENSE)
 
 Bootloop protection  
