@@ -6,5 +6,5 @@ author=nedorazrab0
 description=Bootloop protection
 updateJson=https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/abootloop/main/update.json
 
-zipUrl=https://github.com/Magisk-Modules-Alt-Repo/abootloop/releases/download/v1.3.3/abootloop.zip
+zipUrl=https://github.com/Magisk-Modules-Alt-Repo/abootloop/releases/download/v1.3.4/abootloop.zip
 changelog=https://raw.githubusercontent.com/Magisk-Modules-Alt-Repo/abootloop/main/changelog.md
