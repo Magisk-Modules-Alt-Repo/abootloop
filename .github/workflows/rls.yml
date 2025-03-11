@@ -16,7 +16,7 @@ jobs:
       - name: Compressing
         run: |
           zip -9rv ./abootloop.zip ./* -x ./.git ./.github ./README.md \
-            ./update.json ./changelog.md ./common/repo.json
+            ./update.json ./changelog.md
 
       - name: Releasing
         run: |
